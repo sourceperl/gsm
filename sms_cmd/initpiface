@@ -1,0 +1,10 @@
+#!/usr/bin/python3
+#
+# this script init the piface board
+#
+# chip (MCP23S17) on the board are setup and relay are reset
+
+import pifacedigitalio as p
+
+# init piface
+p.init(True)

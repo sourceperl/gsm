@@ -1,0 +1,5 @@
+# /etc/cron.d/gsmlog: log GSM information into CSV format
+#  Add a line of data each 5 mn to /home/pi/log/gsm_log.csv
+
+# Log every 5 minutes
+#*/5 * * * *     root   gsmlogger >> /home/pi/log/gsm_log.csv

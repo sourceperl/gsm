@@ -1,0 +1,46 @@
+Format du fichier gsm_log.csv 
+*****************************
+ 
+format:
+-------
+mcc, mnc, lac, cell_id, bsic, arfcn, rssi, quality, updated<CRLF>
+
+exemple:
+--------
+208,01,4871,9023,1,583,-70,99,21-02-2013 12:05
+ 
+detail:
+-------
+- mcc:
+"mobile country code" de la cellule
+(details -> http://en.wikipedia.org/wiki/Mobile_country_code)
+ 
+- mnc:
+"mobile network code" de la cellule
+(details -> http://en.wikipedia.org/wiki/Mobile_network_code)
+ 
+- lac:
+"local area code" de la cellule
+(details -> http://en.wikipedia.org/wiki/Location_area#Location_area)
+ 
+- cell_id:
+"cell ID" identifiant du relais GSM
+(detail -> http://en.wikipedia.org/wiki/Cell_ID)
+ 
+- bsic:
+base station identity code
+(detail -> http://en.wikipedia.org/wiki/Base_station_identity_code)
+
+- arfcn:
+absolute radio-frequency channel number
+(detail -> http://en.wikipedia.org/wiki/ARFCN)
+
+- rssi:
+niveau de reception du signal (en dBm)
+valeur comprise entre -110 dBm et -48 dBm 
+
+- quality:
+qualite de reception du siganl (99 = indisponible)
+
+- updated:
+date heure (jj-mm-aaaa hh:mm) de la mesure

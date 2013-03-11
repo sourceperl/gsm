@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+
+# mod.py - Used to send txt messages.
+
+import serial
+import datetime
+import sys
+
+class Modem(object):
+    # Provides access to a gsm modem   
+    def __init__(self, dev_id):
+        self.conn = serial.Serial(dev_id, 9600, timeout=0.1)
+        # make sure modem is OK
+        self.send_at('AT')
+
+    def send_sms(self, number, message):
+        # Send a SMS message
+        # number should start with 1
+        # message should be no more than 160 ASCII characters.       
+        self.send_at('AT+CMGF=1')
+        self.send_at('AT+CMGS="' + str(number) + '"')
+        self.send_at(message + '\x1A', flush=False)
+
+    def messages(self):
+        # Return received messages
+        msgs = []
+        text = None
+        index = None
+        date = None
+        for line in self.send_at('AT+CMGL="ALL"')[:-1]:
+            m = pat.match(line)
+            if m is not None:
+                if text is not None:
+                    msgs.append(Message(index, self, number, date, text))
+                status = m.group('status')
+                index = int(m.group('index'))
+                number = m.group('number')
+                date = m.group('date')
+                text = ''
+            elif text is not None:
+                if line == '\r\n':
+                    text += '\n'
+                else:
+                    text += line.strip()
+        if text is not None:
+            msgs.append(Message(index, self, number, date, text))
+        return msgs
+    
+    def wait(self, timeout=None):
+        # Blocking wait until a message is received or timeout (in secs)
+        old_timeout = self.conn.timeout
+        self.conn.timeout = timeout
+        results = self.conn.read()
+        self.conn.timeout = old_timeout
+        results = self.conn.readlines()
+     
+    def send_at(self, at_command, flush=True):
+        # send an AT command (flush => send CR + LF after AT cmd)
+        self.conn.write(at_command)
+        if flush:
+            self.conn.write('\r\n')
+        results = self.conn.readlines()
+        # search ERROR str in AT command results : raise an except
+        for line in results:
+            if 'ERROR' in line:
+                self.ModemError(at_command, results)
+        return results
+        
+    def ModemError(self,at_command, results):
+        # except routines
+        print "modem error :"
+        print "  " + at_command + " return "
+        print "  " + str(results)
+    
+    def __del__(self):
+        try:
+            self.conn.close()
+        except AttributeError:
+            pass
+            
+# print datetime
+now        = datetime.datetime.now()
+update_str = now.strftime("%d-%m-%Y %H:%M")
+# request modem data
+modem = Modem('/dev/ttyUSB0')
+# do "AT+CCED=0,1": get the status of current service cell 
+cced_reply = modem.send_at('AT+CCED=0,1')[1]
+# format result
+result = cced_reply.split(':')[1].strip().split(',')
+mcc      = result[0]
+mnc      = result[1]
+lac      = result[2]
+cellID   = result[3]
+bsic     = result[4]
+arfcn    = result[5]
+rx_level_dbm = (int(result[6]) * 2) - 110
+rx_level_nw = ((pow(10,(rx_level_dbm/10))/1000) * pow(10,9))
+rx_qual  = result[7]
+# CSV string
+sms_data = mcc + "," + mnc + "," + lac + "," + cellID + "," + bsic + "," + arfcn + "," +  str(rx_level_dbm) + "," + rx_qual + "," + update_str
+#print sms_data + "\r\n"
+sys.stdout.write(sms_data+"\r\n") 

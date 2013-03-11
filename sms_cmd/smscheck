@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+#
+# this script is call by smsd for each operation (send, receive...)
+#
+# when smsd receive a SMS the call line is (thisscript) RECEIVED
+# when smsd send a SMS the call line is (thisscript) SENT
+#
+# software in public domain
+
+import sys
+import os.path
+import pifacedigitalio as p
+
+# only for received SMS
+if sys.argv[1] == "RECEIVED":
+
+  # init piface
+  p.init(False)
+
+  # set relay object
+  pfd = p.PiFaceDigital(0)
+
+  for dirpath, dirnames, filenames in os.walk("/var/spool/sms/incoming/"):
+    for filename in filenames:
+      smsFile = os.path.join(dirpath, filename)
+      # open sms file, skip header (before null line)
+      head = 1
+      with open(smsFile, 'r') as f:
+        for line in f:
+          # remove blank char, force upper case
+          line = line.strip().upper()
+          if len(line) == 0:
+            head = 0
+          if head == 0:
+            # set relay depend on SMS body message
+            if line == "REL0#0":
+              pfd.relay[0].value = 0
+            if line == "REL0#1":
+              pfd.relay[0].value = 1
+            if line == "REL1#0":
+              pfd.relay[1].value = 0
+            if line == "REL1#1":
+              pfd.relay[1].value = 1
+
+      f.closed
+      # remove SMS file
+      os.remove(smsFile)
