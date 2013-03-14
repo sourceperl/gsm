@@ -1,0 +1,30 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          initpiface
+# Required-Start:    $all 
+# Required-Stop:     
+# Should-Stop:       
+# X-Start-Before:    
+# Default-Start:     2 3 4 5 
+# Default-Stop:      
+# Short-Description: init the Piface board
+# Description:       init the PiFace board
+### END INIT INFO
+
+set -e
+
+case "${1:-}" in
+  stop|reload|restart|force-reload)
+        # nothing, just to keep update-rc.d happy
+        ;;
+
+  start)
+        echo "Starting init PiFace board"
+        initpiface;;
+
+  *)
+        echo "Usage: ${0:-} {start|stop|status|restart|reload|force-reload}" >&2
+        exit 1
+        ;;
+esac
