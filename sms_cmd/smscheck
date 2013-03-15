@@ -8,6 +8,7 @@
 # software in public domain
 
 import sys
+import syslog
 import os.path
 import pifacedigitalio as p
 
@@ -24,6 +25,7 @@ if sys.argv[1] == "RECEIVED":
     for filename in filenames:
       smsFile = os.path.join(dirpath, filename)
       # open sms file, skip header (before null line)
+      syslog.syslog('process SMS file ' + smsFile)
       head = 1
       with open(smsFile, 'r') as f:
         for line in f:
@@ -34,12 +36,16 @@ if sys.argv[1] == "RECEIVED":
           if head == 0:
             # set relay depend on SMS body message
             if line == "REL0#0":
+              syslog.syslog('piface reset relay 0')
               pfd.relay[0].value = 0
             if line == "REL0#1":
+              syslog.syslog('piface set relay 0')
               pfd.relay[0].value = 1
             if line == "REL1#0":
+              syslog.syslog('piface reset relay 1')
               pfd.relay[1].value = 0
             if line == "REL1#1":
+              syslog.syslog('piface set relay 1')
               pfd.relay[1].value = 1
 
       f.closed
