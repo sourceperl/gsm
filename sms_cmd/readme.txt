@@ -20,7 +20,8 @@ sendsms 	bash script for send SMS from command line
 	sudo cp pifacestart /etc/init.d
 	sudo chown root pifacestart
 	sudo chgrp root pifacestart
-	# use insserv to enable the init script (since debian 6 : update-rc.d is now deprecated)
+	# use insserv to enable the init script 
+        # since debian 6 : update-rc.d is now deprecated
 	sudo insserv -v /etc/init.d/pifacestart
 	
 	# install smstools
