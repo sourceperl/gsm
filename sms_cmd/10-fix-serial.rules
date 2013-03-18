@@ -1,0 +1,4 @@
+# Fix GSM device to /dev/ttyGSM
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A501DGDK", ACTION=="add", SYMLINK+="ttyGSM"
+# Fix GPS device to /dev/ttyGPS
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="AE0069NI", ACTION=="add", SYMLINK+="ttyGPS"
